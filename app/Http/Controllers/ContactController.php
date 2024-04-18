@@ -79,6 +79,8 @@ class ContactController extends Controller
                 'postal_code' => ['nullable', 'max:25'],
             ])
         );
+
+        return ContactResource::make($contact->refresh());
     }
 
     /**
@@ -87,5 +89,10 @@ class ContactController extends Controller
     public function destroy(Contact $contact)
     {
         $contact->delete();
+    }
+
+    public function restore(Contact $contact)
+    {
+        $contact->restore();
     }
 }

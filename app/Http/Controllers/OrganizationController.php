@@ -2,17 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrganizationResource;
 use App\Models\Organization;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrganizationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $organizations = Auth::user()
+            ->account
+            ->organizations()
+            ->orderBy('name')
+            ->filter($request->only('search', 'trashed'))
+            ->paginate(10);
+
+        return OrganizationResource::collection($organizations);
     }
 
     /**
@@ -20,7 +29,18 @@ class OrganizationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $organization = Auth::user()->account->organizations()->create(
+            $request->validate([
+                'name' => ['required', 'max:100'],
+                'email' => ['nullable', 'max:50', 'email'],
+                'phone' => ['nullable', 'max:50'],
+                'address' => ['nullable', 'max:150'],
+                'city' => ['nullable', 'max:50'],
+                'region' => ['nullable', 'max:50'],
+                'country' => ['nullable', 'max:2'],
+                'postal_code' => ['nullable', 'max:25'],
+            ])
+        );
     }
 
     /**
@@ -28,7 +48,7 @@ class OrganizationController extends Controller
      */
     public function show(Organization $organization)
     {
-        //
+        return OrganizationResource::make($organization);
     }
 
     /**
@@ -36,7 +56,18 @@ class OrganizationController extends Controller
      */
     public function update(Request $request, Organization $organization)
     {
-        //
+        $organization = $organization->update(
+            $request->validate([
+                'name' => ['required', 'max:100'],
+                'email' => ['nullable', 'max:50', 'email'],
+                'phone' => ['nullable', 'max:50'],
+                'address' => ['nullable', 'max:150'],
+                'city' => ['nullable', 'max:50'],
+                'region' => ['nullable', 'max:50'],
+                'country' => ['nullable', 'max:2'],
+                'postal_code' => ['nullable', 'max:25'],
+            ])
+        );
     }
 
     /**
@@ -44,6 +75,11 @@ class OrganizationController extends Controller
      */
     public function destroy(Organization $organization)
     {
-        //
+        $organization->delete();
+    }
+
+    public function restore(Organization $organization)
+    {
+        $organization->restore();
     }
 }
