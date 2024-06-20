@@ -21,6 +21,6 @@ class ContactResource extends JsonResource
             'city' => $this->city,
             'deleted_at' => $this->deleted_at,
             'organization' => $this->organization ? $this->organization->only('name') : null,
-        ];
+        ] + parent::toArray($request);
     }
 }

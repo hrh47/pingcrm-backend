@@ -11,6 +11,8 @@ class Organization extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $guarded = [];
+
     public function account()
     {
         return $this->belongsTo(Account::class);

@@ -17,9 +17,10 @@ class OrganizationResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'phone' => $this->phone,
-            'city' => $this->city,
-            'deleted_at' => $this->deleted_at,
-        ];
+            'phone' => $this->whenHas('phone', $this->phone),
+            'city' => $this->whenHas('city', $this->city),
+            'deleted_at' => $this->whenHas('deleted_at', $this->deleted_at),
+            'contacts' => ContactResource::collection($this->whenLoaded('contacts'))
+        ] + parent::toArray($request);
     }
 }

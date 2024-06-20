@@ -11,6 +11,8 @@ class Contact extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $guarded = [];
+
     public function organization()
     {
         return $this->belongsTo(Organization::class);
@@ -39,5 +41,10 @@ class Contact extends Model
                 $query->onlyTrashed();
             }
         });
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
     }
 }

@@ -18,8 +18,13 @@ class OrganizationController extends Controller
             ->account
             ->organizations()
             ->orderBy('name')
-            ->filter($request->only('search', 'trashed'))
-            ->paginate(10);
+            ->filter($request->only('search', 'trashed'));
+
+        if (request('page')) {
+            $organizations = $organizations->paginate(10);
+        } else {
+            $organizations = $organizations->select(['id', 'name'])->get();
+        }
 
         return OrganizationResource::collection($organizations);
     }
@@ -48,7 +53,7 @@ class OrganizationController extends Controller
      */
     public function show(Organization $organization)
     {
-        return OrganizationResource::make($organization);
+        return OrganizationResource::make($organization->load('contacts'));
     }
 
     /**
