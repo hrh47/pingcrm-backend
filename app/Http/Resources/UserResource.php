@@ -19,9 +19,9 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'owner' => $this->owner,
+            'owner' => boolval($this->owner),
             'photo' => $this->photo_path ? URL::route('image', ['path' => $this->photo_path, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
             'deleted_at' => $this->deleted_at,
-        ];
+        ] + parent::toArray($request);
     }
 }

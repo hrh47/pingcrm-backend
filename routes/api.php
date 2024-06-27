@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -13,3 +14,7 @@ Route::put('/organizations/{organization}/restore', [OrganizationController::cla
 
 Route::apiResource('/users', UserController::class);
 Route::put('/users/{user}/restore', [UserController::class, 'restore']);
+
+Route::get('/img/{path}', [ImageController::class, 'show'])
+    ->where('path', '.*')
+    ->name('image');

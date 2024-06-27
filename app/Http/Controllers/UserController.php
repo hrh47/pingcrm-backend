@@ -28,21 +28,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $request['data'] = json_decode($request->get('data'), true);
         $request->validate([
-            'first_name' => ['required', 'max:50'],
-            'last_name' => ['required', 'max:50'],
-            'email' => ['required', 'max:50', 'email', Rule::unique('users')],
-            'password' => ['nullable'],
-            'owner' => ['required', 'boolean'],
+            'data.first_name' => ['required', 'max:50'],
+            'data.last_name' => ['required', 'max:50'],
+            'data.email' => ['required', 'max:50', 'email', Rule::unique('users', 'email')],
+            'data.password' => ['nullable'],
+            'data.owner' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
         ]);
 
         Auth::user()->account->users()->create([
-            'first_name' => $request->get('first_name'),
-            'last_name' => $request->get('last_name'),
-            'email' => $request->get('email'),
-            'password' => $request->get('password'),
-            'owner' => $request->get('owner'),
+            'first_name' => $request->input('data.first_name'),
+            'last_name' => $request->input('data.last_name'),
+            'email' => $request->input('data.email'),
+            'password' => $request->input('data.password'),
+            'owner' => $request->input('data.owner'),
             'photo_path' => $request->file('photo') ? $request->file('photo')->store('users') : null,
         ]);
     }
@@ -60,24 +61,27 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $request['data'] = json_decode($request->get('data'), true);
         $request->validate([
-            'first_name' => ['required', 'max:50'],
-            'last_name' => ['required', 'max:50'],
-            'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($user->id)],
-            'password' => ['nullable'],
-            'owner' => ['required', 'boolean'],
-            'photo' => ['nullable', 'image'],
+            'data.first_name' => ['required', 'max:50'],
+            'data.last_name' => ['required', 'max:50'],
+            'data.email' => ['required', 'max:50', 'email', Rule::unique('users', 'email')->ignore($user->id)],
+            'data.password' => ['nullable'],
+            'data.owner' => ['required', 'boolean'],
+            'data.photo' => ['nullable', 'image'],
         ]);
 
-        $user->update($request->only('first_name', 'last_name', 'email', 'owner'));
+        $user->update($request->only('data.first_name', 'data.last_name', 'data.email', 'data.owner'));
 
         if ($request->file('photo')) {
             $user->update(['photo_path' => $request->file('photo')->store('users')]);
         }
 
         if ($request->get('password')) {
-            $user->update(['password' => $request->get('password')]);
+            $user->update(['password' => $request->input('data.password')]);
         }
+
+        return ['success' => true];
     }
 
     /**
